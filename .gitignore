@@ -8,6 +8,6 @@ QuickGenerated/
 bin/
 FinalDiagrams/
 bucket.json
-nextjs-app/.next/
-nextjs-app/node_modules/
-nextjs-app/.env.local
+ThinkDiagramDashboard/.next/
+ThinkDiagramDashboard/node_modules/
+ThinkDiagramDashboard/.env.local

@@ -1,6 +1,6 @@
 import path from 'path'
 
-// nextjs-app/ is one level inside the repo root
+// ThinkDiagramDashboard/ is one level inside the repo root
 export const REPO_ROOT       = path.resolve(process.cwd(), '..')
 export const CSV_FILE        = path.join(REPO_ROOT, 'DiagramsMakingSheet.csv')
 export const BUCKET_FILE     = path.join(REPO_ROOT, 'bucket.json')
