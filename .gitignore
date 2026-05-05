@@ -1,0 +1,10 @@
+credentials/
+__pycache__/
+*.pyc
+.env
+logs/
+DiagramsGenerated/
+QuickGenerated/
+bin/
+FinalDiagrams/
+bucket.json
