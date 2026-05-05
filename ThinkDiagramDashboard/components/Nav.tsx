@@ -29,8 +29,8 @@ export default function Nav() {
       <Link href="/" className="text-white font-black text-sm mr-auto tracking-tight no-underline">
         ⚡ UPSC Diagrams
       </Link>
-      <NavLink href="/" active={pathname === '/'}>Dashboard</NavLink>
-      <NavLink href="/generate" active={pathname === '/generate'}>Quick Generate</NavLink>
+      <NavLink href="/" active={pathname === '/' || pathname === '/generate'}>Quick Generate</NavLink>
+      <NavLink href="/upload" active={pathname.startsWith('/upload')}>Upload & Generate</NavLink>
       <NavLink href="/bucket" active={pathname === '/bucket'}>
         Bucket{' '}
         <span className={`rounded-full px-1.5 py-0 text-[.68rem] font-bold min-w-[20px] text-center

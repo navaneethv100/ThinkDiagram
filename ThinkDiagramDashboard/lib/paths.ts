@@ -11,4 +11,5 @@ export const STAGE1_PROMPT   = path.join(REPO_ROOT, 'stage1_gemini_prompt_genera
 export const STAGE2_PROMPT   = path.join(REPO_ROOT, 'stage2_nanoBanana_image_generator.txt')
 export const SCRIPTS_DIR     = path.join(process.cwd(), 'scripts')
 export const CREDENTIALS     = path.join(REPO_ROOT, 'credentials', 'google_credentials.json')
+export const UPLOADS_DIR       = path.join(REPO_ROOT, 'uploads')
 export const CASE_STUDY_CUTOFF = 74

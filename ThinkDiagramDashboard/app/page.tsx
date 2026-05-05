@@ -1,5 +1,5 @@
-import DashboardClient from '@/components/dashboard/DashboardClient'
+import QuickGenerateClient from '@/components/generate/QuickGenerateClient'
 
-export default function DashboardPage() {
-  return <DashboardClient />
+export default function HomePage() {
+  return <QuickGenerateClient />
 }

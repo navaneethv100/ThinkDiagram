@@ -58,8 +58,12 @@ export default function Lightbox() {
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={meta.src} alt={meta.label}
-           className="max-w-[min(90vw,1024px)] max-h-[85vh] object-contain rounded-md cursor-default"
-           style={{ boxShadow: '0 24px 80px rgba(0,0,0,.6)' }}
+           className="object-contain rounded-xl cursor-default"
+           style={{
+             maxWidth: 'min(95vw, 1400px)',
+             maxHeight: '88vh',
+             boxShadow: '0 24px 80px rgba(0,0,0,.7)',
+           }}
            onClick={e => e.stopPropagation()} />
 
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-[1001]"
