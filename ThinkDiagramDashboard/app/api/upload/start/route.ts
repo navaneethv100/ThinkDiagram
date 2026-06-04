@@ -4,6 +4,7 @@ import path from 'path'
 import { writeSession, imagesDir, type UploadSession } from '@/lib/upload-sessions'
 import { activeSessions } from '@/lib/upload-jobs'
 import { runStage1, runStage2 } from '@/lib/python-bridge'
+import { buildImageFilename, currentFilenameYear, findRowValue } from '@/lib/images'
 
 const CONCURRENCY = 3
 
@@ -46,6 +47,17 @@ export async function POST(req: NextRequest) {
       prompt: '',
       image_file: '',
       error: '',
+      source_id: findRowValue(r, ['id']) || String(i + 1),
+      db_id: findRowValue(r, ['db id', 'dbId', 'db_id', 'dbid', 'DB_ID']),
+      year: findRowValue(r, ['year', 'Year']) || currentFilenameYear(),
+      title: findRowValue(r, [
+        'TitleOfImage',
+        'titleOfImage',
+        'title',
+        'Title',
+        'Details of Diagram / flowchart / maps needed',
+        'Diagram_Name',
+      ]),
     })).filter(r => r.value !== ''),
   }
 
@@ -66,7 +78,12 @@ export async function POST(req: NextRequest) {
           row.status = 'stage2'
           writeSession(session)
 
-          const imgFile = `${String(row.index).padStart(4, '0')}_diagram.png`
+          const imgFile = buildImageFilename({
+            id: row.source_id || row.index + 1,
+            dbId: row.db_id || row.source_id || row.index + 1,
+            year: row.year || currentFilenameYear(),
+            title: row.title || row.prompt,
+          })
           const imgPath = path.join(imagesDir(id), imgFile)
           await runStage2(row.prompt, imgPath)
 

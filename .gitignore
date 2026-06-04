@@ -8,7 +8,17 @@ QuickGenerated/
 bin/
 FinalDiagrams/
 FinalDiagrams2023/
+uploads/
+2025/
+NewImage*/
+ThinkDiagramDashboard/SKLogo/
 bucket.json
+DiagramsMakingSheet.csv
+Mains Diagrams - *.csv
+MainsDiagrams-*.csv
+stage2_nanoBanana_image_generator.txt
+.DS_Store
+**/.DS_Store
 ThinkDiagramDashboard/.next/
 ThinkDiagramDashboard/node_modules/
 ThinkDiagramDashboard/.env.local

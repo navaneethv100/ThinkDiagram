@@ -21,7 +21,7 @@ export async function POST(
   const target = rows.find(r => r.SL_NO.trim() === sl_no)
   if (!target) return NextResponse.json({ error: 'not found' }, { status: 404 })
 
-  const outputPath = buildFilepath(target)
+  const outputPath = buildFilepath(target, prompt)
   diagramJobs.set(sl_no, { status: 'generating' })
 
   // Fire and forget

@@ -5,6 +5,7 @@ import { QUICK_GENERATED } from '@/lib/paths'
 import { v4 as uuidv4 } from 'uuid'
 import path from 'path'
 import fs from 'fs'
+import { buildImageFilename, currentFilenameYear } from '@/lib/images'
 
 export async function POST(req: NextRequest) {
   const { description, diagram_type = '' } = await req.json() as {
@@ -26,8 +27,12 @@ export async function POST(req: NextRequest) {
       quickJobs.set(jobId, { ...quickJobs.get(jobId)!, status: 'stage2', stage1_prompt: nbPrompt })
 
       fs.mkdirSync(QUICK_GENERATED, { recursive: true })
-      const ts       = new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 15)
-      const filename = `quick_${ts}_${jobId.slice(0, 6)}.png`
+      const filename = buildImageFilename({
+        id: jobId.slice(0, 8),
+        dbId: 'quick',
+        year: currentFilenameYear(),
+        title: nbPrompt,
+      })
       const outputPath = path.join(QUICK_GENERATED, filename)
 
       await runStage2(nbPrompt, outputPath)

@@ -11,6 +11,10 @@ export interface UploadRow {
   prompt: string
   image_file: string
   error: string
+  source_id?: string
+  db_id?: string
+  year?: string
+  title?: string
 }
 
 export interface UploadSession {

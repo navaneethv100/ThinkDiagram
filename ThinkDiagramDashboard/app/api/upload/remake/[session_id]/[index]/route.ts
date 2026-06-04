@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 import { readSession, writeSession, imagesDir } from '@/lib/upload-sessions'
 import { runStage2 } from '@/lib/python-bridge'
+import { buildImageFilename, currentFilenameYear } from '@/lib/images'
 
 const g = globalThis as Record<string, unknown>
 if (!g.__uploadRemakeJobs) g.__uploadRemakeJobs = new Set<string>()
@@ -37,7 +38,12 @@ export async function POST(
   remakeJobs.add(jobKey)
   ;(async () => {
     try {
-      const imgFile = `${String(idx).padStart(4, '0')}_diagram.png`
+      const imgFile = buildImageFilename({
+        id: row.source_id || idx + 1,
+        dbId: row.db_id || row.source_id || idx + 1,
+        year: row.year || currentFilenameYear(),
+        title: row.title || prompt,
+      })
       const imgPath = path.join(imagesDir(session_id), imgFile)
       await runStage2(prompt, imgPath)
 

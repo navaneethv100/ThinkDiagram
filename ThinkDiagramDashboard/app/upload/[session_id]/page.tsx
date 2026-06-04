@@ -1,7 +1,7 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { use } from 'react'
-import type { UploadSession } from '@/lib/upload-sessions'
+import type { UploadRow, UploadSession } from '@/lib/upload-sessions'
 import UploadCard from '@/components/upload/UploadCard'
 
 type Params = { session_id: string }
@@ -42,6 +42,16 @@ export default function UploadResultsPage({ params }: { params: Promise<Params> 
       return next
     })
   }
+
+  const updateRow = useCallback((updatedRow: UploadRow) => {
+    setSession(prev => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        rows: prev.rows.map(row => row.index === updatedRow.index ? updatedRow : row),
+      }
+    })
+  }, [])
 
   function selectAll() {
     if (!session) return
@@ -186,6 +196,7 @@ export default function UploadResultsPage({ params }: { params: Promise<Params> 
                 selected={row.image_file ? selected.has(row.image_file) : false}
                 onToggleSelect={toggleSelect}
                 onLightbox={(src, value) => setLightbox({ src, value })}
+                onRowUpdate={updateRow}
               />
             ))}
           </div>

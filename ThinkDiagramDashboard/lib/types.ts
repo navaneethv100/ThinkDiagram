@@ -1,4 +1,7 @@
 export interface DiagramRow {
+  [key: string]: string | undefined
+  id?: string
+  dbId?: string
   SL_NO: string
   Year: string
   Questions: string

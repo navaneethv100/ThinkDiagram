@@ -1,7 +1,7 @@
 import { spawn } from 'child_process'
 import path from 'path'
 import fs from 'fs'
-import { REPO_ROOT, SCRIPTS_DIR, STAGE1_PROMPT, STAGE2_PROMPT, CREDENTIALS } from './paths'
+import { REPO_ROOT, SCRIPTS_DIR, STAGE1_PROMPT, STAGE2_PROMPT, CREDENTIALS, SK_LOGO } from './paths'
 
 function runPython(scriptName: string, payload: object): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
@@ -30,6 +30,24 @@ function runPython(scriptName: string, payload: object): Promise<Record<string, 
   })
 }
 
+function runCommand(command: string, args: string[], cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(command, args, { cwd, env: { ...process.env } })
+
+    let stderr = ''
+    proc.stderr.on('data', (d: Buffer) => { stderr += d.toString() })
+    proc.on('close', (code) => {
+      if (code === 0) resolve()
+      else reject(new Error(`${command} ${args.join(' ')} failed: ${stderr.slice(0, 500)}`))
+    })
+  })
+}
+
+async function addWatermark(outputPath: string): Promise<void> {
+  if (!fs.existsSync(SK_LOGO)) throw new Error(`SuperKalam logo not found: ${SK_LOGO}`)
+  await runCommand('python3', [path.join(SCRIPTS_DIR, 'add_watermark.py'), SK_LOGO, outputPath], REPO_ROOT)
+}
+
 export async function runStage1(question: string, extra: string): Promise<string> {
   const system_prompt = fs.readFileSync(STAGE1_PROMPT, 'utf-8').trim()
   const result = await runPython('stage1_bridge.py', {
@@ -54,5 +72,6 @@ export async function runStage2(
     credentials_path: CREDENTIALS,
     ...(binDir ? { bin_dir: binDir } : {}),
   })
+  await addWatermark(outputPath)
   return result.filename as string
 }

@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { readSession, writeSession, imagesDir } from '@/lib/upload-sessions'
 import { activeSessions } from '@/lib/upload-jobs'
+import { buildImageFilename, currentFilenameYear } from '@/lib/images'
 
 const g = globalThis as Record<string, unknown>
 if (!g.__uploadRemakeJobs) g.__uploadRemakeJobs = new Set<string>()
@@ -29,7 +30,12 @@ export async function GET(
     if (rowJobActive) continue
 
     if (row.status === 'stage2') {
-      const expectedFile = `${String(row.index).padStart(4, '0')}_diagram.png`
+      const expectedFile = buildImageFilename({
+        id: row.source_id || row.index + 1,
+        dbId: row.db_id || row.source_id || row.index + 1,
+        year: row.year || currentFilenameYear(),
+        title: row.title || row.prompt,
+      })
       const imgPath      = path.join(imgDir, expectedFile)
 
       if (fs.existsSync(imgPath)) {

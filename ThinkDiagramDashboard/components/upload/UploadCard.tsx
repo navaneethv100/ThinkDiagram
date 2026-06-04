@@ -26,12 +26,14 @@ export default function UploadCard({
   selected,
   onToggleSelect,
   onLightbox,
+  onRowUpdate,
 }: {
   sessionId: string
   row: UploadRow
   selected: boolean
   onToggleSelect: (imgFile: string) => void
   onLightbox: (src: string, value: string) => void
+  onRowUpdate: (row: UploadRow) => void
 }) {
   const [imageFile,  setImageFile]  = useState(row.image_file)
   const [status,     setStatus]     = useState<RowStatus>(row.status)
@@ -64,7 +66,9 @@ export default function UploadCard({
       })
       const data = await res.json() as { prompt?: string; error?: string }
       if (!res.ok) throw new Error(data.error ?? 'Stage 1 failed')
-      setPrompt(data.prompt ?? '')
+      const nextPrompt = data.prompt ?? ''
+      setPrompt(nextPrompt)
+      onRowUpdate({ ...row, prompt: nextPrompt })
       setEdited(true)
       showToast(`Row ${row.index + 1} — prompt refreshed. Review then Remake Image.`)
     } catch (e: unknown) {
@@ -80,21 +84,27 @@ export default function UploadCard({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt }),
     })
-    if (res.ok) { setEdited(false); showToast('Prompt saved') }
+    if (res.ok) {
+      onRowUpdate({ ...row, prompt })
+      setEdited(false)
+      showToast('Prompt saved')
+    }
     else        showToast('Save failed', true)
   }
 
   async function handleRemake() {
     if (!prompt.trim()) { showToast('Prompt is empty', true); return }
+    const submittedPrompt = prompt
     setRemaking(true)
     setEdited(false)
     setErrMsg('')
     setStatus('stage2')
+    onRowUpdate({ ...row, prompt: submittedPrompt, status: 'stage2', error: '' })
 
     const res = await fetch(`/api/upload/remake/${sessionId}/${row.index}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt: submittedPrompt }),
     })
     if (!res.ok) {
       const data = await res.json() as { error?: string }
@@ -109,13 +119,17 @@ export default function UploadCard({
       if (!live) return
       if (live.status === 'done') {
         clearInterval(pollRef.current!)
+        onRowUpdate(live)
         setImageFile(live.image_file)
         setImgVersion(Date.now())
         setStatus('done')
+        setPrompt(live.prompt)
+        setEdited(false)
         setRemaking(false)
         showToast(`Row ${row.index + 1} generated`)
       } else if (live.status === 'error') {
         clearInterval(pollRef.current!)
+        onRowUpdate(live)
         onError(live.error)
       }
     }, 2000)
