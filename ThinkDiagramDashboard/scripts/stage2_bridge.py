@@ -42,7 +42,7 @@ def main():
     full_prompt = f"{system_prompt}\n\n{nb_prompt}"
 
     resp = client.models.generate_content(
-        model="publishers/google/models/gemini-3.1-flash-image-preview",
+        model="publishers/google/models/gemini-3.1-flash-image",
         contents=full_prompt,
         config=types.GenerateContentConfig(
             response_modalities=["IMAGE", "TEXT"], temperature=1.0),
