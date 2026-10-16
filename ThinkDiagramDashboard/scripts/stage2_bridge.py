@@ -3,7 +3,7 @@
 Reads JSON from stdin, writes JSON to stdout.
 Moves existing image to bin/ before saving if bin_dir is provided.
 """
-import io, json, sys, time, warnings
+import io, json, os, sys, time, warnings
 from pathlib import Path
 warnings.filterwarnings("ignore")
 
@@ -24,25 +24,21 @@ def main():
     nb_prompt     = payload["nb_prompt"]
     system_prompt = payload["system_prompt"]
     output_path   = Path(payload["output_path"])
-    creds_path    = payload["credentials_path"]
     bin_dir       = payload.get("bin_dir")
 
     from google import genai
     from google.genai import types
-    from google.oauth2 import service_account
 
-    creds = service_account.Credentials.from_service_account_file(
-        creds_path, scopes=["https://www.googleapis.com/auth/cloud-platform"])
-    with open(creds_path) as f:
-        project_id = json.load(f)["project_id"]
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        raise RuntimeError("GOOGLE_API_KEY is not configured")
 
-    client = genai.Client(
-        vertexai=True, project=project_id, location="global", credentials=creds)
+    client = genai.Client(api_key=api_key)
 
     full_prompt = f"{system_prompt}\n\n{nb_prompt}"
 
     resp = client.models.generate_content(
-        model="publishers/google/models/gemini-3.1-flash-image",
+        model="gemini-3.1-flash-image",
         contents=full_prompt,
         config=types.GenerateContentConfig(
             response_modalities=["IMAGE", "TEXT"], temperature=1.0),

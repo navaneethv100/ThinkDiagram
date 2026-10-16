@@ -17,8 +17,8 @@ AI-powered UPSC diagram generation tool. Takes UPSC exam questions, runs them th
 | Layer | Technology |
 |---|---|
 | Frontend & Server | Next.js 16 (App Router), TypeScript, Tailwind CSS |
-| AI — Stage 1 | Vertex AI Gemini Pro — turns a UPSC question into a structured image prompt |
-| AI — Stage 2 | Vertex AI Gemini Flash Image Preview — generates the actual diagram PNG |
+| AI — Stage 1 | Google AI Studio Gemini Pro — turns a UPSC question into a structured image prompt |
+| AI — Stage 2 | Google AI Studio Gemini Flash Image — generates the actual diagram PNG |
 | Python Bridge | Thin Python scripts called via `child_process` from Next.js API routes |
 | Image Processing | Pillow — pads every output to a 1024×768 (4:3) canvas |
 | Data | CSV file + local filesystem (no database) |
@@ -44,7 +44,6 @@ ThinkDiagram/
 ├── FinalDiagrams/                # Generated diagram PNGs
 ├── QuickGenerated/               # Quick Generate output PNGs
 ├── bin/                          # Recycled images (moved here before remake)
-├── credentials/                  # Google service account (gitignored)
 ├── stage1_gemini_prompt_generator.txt   # Stage 1 system prompt
 ├── stage2_nanoBanana_image_generator.txt # Stage 2 system prompt
 └── requirements.txt              # Python dependencies
@@ -60,14 +59,12 @@ ThinkDiagram/
 pip install -r requirements.txt
 ```
 
-### 2. Google credentials
+### 2. Google AI Studio API key
 
-Place your Google Cloud service account JSON at:
+Create `ThinkDiagramDashboard/.env.local`:
 ```
-credentials/google_credentials.json
+GOOGLE_API_KEY=your_google_ai_studio_api_key
 ```
-
-The service account needs the **Vertex AI User** role on your project.
 
 ### 3. Install and run
 

@@ -43,6 +43,7 @@ export default function UploadCard({
   const [errMsg,     setErrMsg]     = useState(row.error)
   const [s1Loading,  setS1Loading]  = useState(false)
   const [remaking,   setRemaking]   = useState(false)
+  const [saving,     setSaving]     = useState(false)
   const [imgVersion, setImgVersion] = useState(Date.now())
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -133,6 +134,26 @@ export default function UploadCard({
         onError(live.error)
       }
     }, 2000)
+  }
+
+  async function handleDownload() {
+    if (!imageFile || saving) return
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/upload/images/${sessionId}/${imageFile}?download=1&v=${imgVersion}`)
+      if (!res.ok) throw new Error('Download failed')
+      const blob = await res.blob()
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement('a')
+      a.href     = url
+      a.download = imageFile
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e: unknown) {
+      showToast(`Download failed: ${e instanceof Error ? e.message : String(e)}`, true)
+    } finally {
+      setSaving(false)
+    }
   }
 
   function onError(msg: string) {

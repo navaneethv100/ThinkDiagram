@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Stage 1 bridge: question -> NanoBanana prompt via Gemini Pro.
+"""Stage 1 bridge: question -> NanoBanana prompt via the Gemini API.
 Reads JSON from stdin, writes JSON to stdout.
 """
-import json, re, sys, warnings
+import json, os, re, sys, warnings
 warnings.filterwarnings("ignore")
 
 def main():
@@ -10,26 +10,22 @@ def main():
     question      = payload["question"]
     extra         = payload.get("extra", "")
     system_prompt = payload["system_prompt"]
-    creds_path    = payload["credentials_path"]
 
     from google import genai
     from google.genai import types
-    from google.oauth2 import service_account
 
-    creds = service_account.Credentials.from_service_account_file(
-        creds_path, scopes=["https://www.googleapis.com/auth/cloud-platform"])
-    with open(creds_path) as f:
-        project_id = json.load(f)["project_id"]
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        raise RuntimeError("GOOGLE_API_KEY is not configured")
 
-    client = genai.Client(
-        vertexai=True, project=project_id, location="global", credentials=creds)
+    client = genai.Client(api_key=api_key)
 
     content = f"Question:\n{question}"
     if extra:
         content += f"\n\nSpecial Instructions from user: {extra}"
 
     resp = client.models.generate_content(
-        model="publishers/google/models/gemini-3.1-pro-preview",
+        model="gemini-3.1-pro-preview",
         contents=content,
         config=types.GenerateContentConfig(
             system_instruction=system_prompt, temperature=0.2, max_output_tokens=4096),
